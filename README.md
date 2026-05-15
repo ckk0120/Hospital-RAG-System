@@ -1,4 +1,4 @@
-# 医院智能问答系统 (Hospital RAG System)
+# 🏥 医院智能问答系统 (Hospital RAG System)
 
 基于 **LangChain + Chroma + HuggingFace** 的医疗知识库问答系统，支持 Android 移动端集成。
 
@@ -53,6 +53,7 @@
 ## 🛠️ 技术栈
 
 ### 后端核心
+
 - **LangChain**: LLM 应用开发框架
 - **Chroma**: 向量数据库
 - **HuggingFace Transformers**: Embeddings 模型
@@ -60,10 +61,12 @@
 - **Uvicorn**: ASGI 服务器
 
 ### 前端/移动端
+
 - **Android**: Kotlin + Retrofit
 - **备选方案**: Volley, OkHttp
 
 ### 数据处理
+
 - **JSON**: 知识库数据存储格式
 - **Sentence Transformers**: 文本向量化
 
@@ -79,8 +82,10 @@ hospital_rag/
 ├── 📄 rebuild_db.py             # 数据库重建脚本
 ├── 📄 crawl_all.py              # 数据爬取脚本
 │
-├── 📊 data.json                 # 医院问答知识库数据
-├── 📊 hospital_articles.json    # 医院文章数据
+├──data
+|   ├── 📊 data.json                 # 医院问答知识库数据
+|   ├── 📊 hospital_data.json
+|   └── 📊 hospital_articles.json    # 医院文章数据
 │
 ├── 🗄️ chroma_db/                # Chroma 向量数据库 (自动生成)
 │   └── ...
@@ -132,6 +137,7 @@ python rag.py
 ```
 
 **预期输出:**
+
 ```
 开始读取 JSON 文件...
 共读取 29 条文档
@@ -151,6 +157,7 @@ python query.py
 ```
 
 **示例对话:**
+
 ```
 请输入您的问题 (输入 'quit' 退出): 初诊患者如何挂号？
 
@@ -171,9 +178,10 @@ python server.py
 ```
 
 **访问服务:**
-- 🌐 API 根路径: http://localhost:8000
-- 📖 API 文档: http://localhost:8000/docs
-- ❤️ 健康检查: http://localhost:8000/health
+
+- 🌐 API 根路径: <http://localhost:8000>
+- 📖 API 文档: <http://localhost:8000/docs>
+- ❤️ 健康检查: <http://localhost:8000/health>
 
 ---
 
@@ -298,6 +306,7 @@ from langchain_chroma import Chroma
 ```
 
 安装依赖:
+
 ```bash
 pip install langchain-chroma
 ```
@@ -323,11 +332,13 @@ vectordb = Chroma.from_documents(
 **原因:** JSON 数据字段名不匹配
 
 **解决方案:** 代码已更新为兼容多种格式:
+
 ```python
 question = item.get('question') or item.get('问题') or item.get('标题', '')
 ```
 
 重新构建数据库:
+
 ```bash
 python rebuild_db.py
 ```
@@ -335,6 +346,7 @@ python rebuild_db.py
 ### Q4: Android 无法连接服务器
 
 **检查清单:**
+
 - ✅ 手机和电脑在同一 WiFi 网络
 - ✅ 使用局域网 IP (如 `192.168.1.100`) 而非 `localhost`
 - ✅ 防火墙开放 8000 端口
@@ -347,6 +359,7 @@ python rebuild_db.py
 ### Q5: 响应速度慢
 
 **优化建议:**
+
 1. 使用 GPU 加速 (修改 `model_kwargs={'device': 'cuda'}`)
 2. 减少 `top_k` 值
 3. 启用缓存机制 (Redis)
@@ -356,6 +369,7 @@ python rebuild_db.py
 ## ⚡ 性能优化
 
 ### 当前配置
+
 - **模型**: all-MiniLM-L6-v2 (轻量级)
 - **设备**: CPU
 - **平均响应时间**: ~2-5秒
@@ -405,18 +419,21 @@ async def query_answer(request: QueryRequest):
 ## 🗺️ 开发路线图
 
 ### Phase 1: 基础功能 (已完成 ✅)
+
 - [x] 向量数据库构建
 - [x] 命令行问答工具
 - [x] FastAPI 后端服务
 - [x] Android 集成方案
 
 ### Phase 2: 功能增强 (计划中 📅)
+
 - [ ] 多轮对话支持 (上下文理解)
 - [ ] 用户认证系统 (JWT)
 - [ ] 问答历史记录
 - [ ] 反馈评分机制
 
 ### Phase 3: 高级特性 (未来 🚀)
+
 - [ ] 语音输入/输出
 - [ ] 图片识别问诊
 - [ ] 医生排班查询
@@ -488,10 +505,10 @@ async def query_answer(request: QueryRequest):
 
 ## 📚 参考资料
 
-1. LangChain 官方文档: https://python.langchain.com/
-2. Chroma 文档: https://docs.trychroma.com/
-3. FastAPI 教程: https://fastapi.tiangolo.com/tutorial/
-4. Android Retrofit: https://square.github.io/retrofit/
+1. LangChain 官方文档: <https://python.langchain.com/>
+2. Chroma 文档: <https://docs.trychroma.com/>
+3. FastAPI 教程: <https://fastapi.tiangolo.com/tutorial/>
+4. Android Retrofit: <https://square.github.io/retrofit/>
 
 ---
 
