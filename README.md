@@ -15,6 +15,7 @@
 - [技术栈](#-技术栈)
 - [项目结构](#-项目结构)
 - [快速开始](#-快速开始)
+- **[A-B 模块对接](#a-b-模块对接)** ⭐
 - [API 文档](#-api-文档)
 - [Android 集成](#-android-集成)
 - [常见问题](#-常见问题)
@@ -46,7 +47,8 @@
 - ✅ **RESTful API**: FastAPI 构建的高性能后端服务
 - ✅ **移动端支持**: 完整的 Android 集成方案
 - ✅ **自动文档**: Swagger UI 交互式 API 文档
-- ✅ **轻量级模型**: all-MiniLM-L6-v2 快速推理
+- ✅ **轻量级模型**: BAAI/bge-small-zh-v1.5 中文优化
+- ✅ **模块化设计**: A-B-C/D 架构,职责清晰
 
 ---
 
@@ -75,14 +77,15 @@
 ## 📁 项目结构
 
 ```
-hospital_rag/
-├── 📄 rag.py                    # 向量数据库构建脚本
+hospital_rag/Hospital-RAG-System/
+├── 📄 rag.py                    # A 模块: 向量数据库构建脚本
+├── 📄 verify_integration.py     # A-B 对接验证脚本
 ├── 📄 server.py                 # FastAPI 后端服务
 ├── 📄 query.py                  # 命令行测试工具
 ├── 📄 rebuild_db.py             # 数据库重建脚本
 ├── 📄 crawl_all.py              # 数据爬取脚本
 │
-├──data
+├── 📂 data/                     # 数据目录
 |   ├── 📊 data.json                 # 医院问答知识库数据
 |   ├── 📊 hospital_data.json
 |   └── 📊 hospital_articles.json    # 医院文章数据
@@ -93,8 +96,10 @@ hospital_rag/
 ├── 📦 requirements.txt          # RAG 核心依赖
 ├── 📦 server_requirements.txt   # 服务端额外依赖
 │
+├── 📘 INTEGRATION_GUIDE.md      # ⭐ A-B 模块对接指南
 ├── 📘 ANDROID_INTEGRATION.md    # Android 集成详细指南
-└── 📘 README.md                 # 项目说明文档
+├── 📘 README.md                 # 项目说明文档
+└── 📝 .env.example              # 环境变量配置示例
 ```
 
 ---
@@ -182,6 +187,84 @@ python server.py
 - 🌐 API 根路径: <http://localhost:8000>
 - 📖 API 文档: <http://localhost:8000/docs>
 - ❤️ 健康检查: <http://localhost:8000/health>
+
+---
+
+## 🔗 A-B 模块对接
+
+本系统采用 **A-B-C/D 模块化架构**,详细对接指南请查看: [INTEGRATION_GUIDE.md](INTEGRATION_GUIDE.md)
+
+### 📋 架构说明
+
+```
+┌─────────────┐         ┌─────────────┐         ┌─────────────┐
+│  A 模块      │  ───→   │  B 模块      │  ───→   │  C/D 模块    │
+│ 知识库构建   │         │ RAG 检索     │         │ LLM/前端    │
+└─────────────┘         └─────────────┘         └─────────────┘
+     ↓                         ↓
+  ChromaDB              只读检索接口
+  (写入端)              (读取端)
+```
+
+### ✅ A 模块输出信息
+
+运行以下命令生成 ChromaDB 并获取对接配置:
+
+```bash
+# 1. 构建数据库
+python rag.py
+
+# 2. 验证对接规范
+python verify_integration.py
+```
+
+**B 模块需要的环境变量:**
+
+```bash
+CHROMA_DB_DIR=./data/chroma_db
+EMBEDDING_MODEL=BAAI/bge-small-zh-v1.5
+CHROMA_COLLECTION_NAME=langchain
+```
+
+### 📊 Metadata 字段约定
+
+A 模块写入每个 chunk 的 metadata 包含:
+
+```json
+{
+  "source": "hospital_qa.json",
+  "title": "初诊患者如何挂号?",
+  "department": "综合科",
+  "question_type": "faq"
+}
+```
+
+**B 模块读取优先级:** `source` → `file_name` → `""`
+
+### 🔍 快速验证
+
+```bash
+# 运行集成验证脚本
+python verify_integration.py
+```
+
+**预期输出:**
+```
+🎉 所有检查通过!可以交付给 B 模块
+
+============================================================
+📋 A 与 B 对接信息
+============================================================
+CHROMA_DB_DIR=/absolute/path/to/data/chroma_db
+EMBEDDING_MODEL=BAAI/bge-small-zh-v1.5
+CHROMA_COLLECTION_NAME=langchain
+============================================================
+```
+
+### 📚 相关文档
+
+- 📘 [完整对接指南](INTEGRATION_GUIDE.md) - A-B 模块详细对接规范
+- 📝 [.env.example](.env.example) - 环境变量配置示例
 
 ---
 
