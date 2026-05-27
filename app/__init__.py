@@ -1,0 +1,2 @@
+"""Hospital RAG application package."""
+
